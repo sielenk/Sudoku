@@ -83,7 +83,13 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         return builder.toString()
     }
 
-    fun step() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun update() {
+        cells.forEach { cell ->
+            val newValue = cell.newValue
+
+            if (newValue != null) {
+                cell.set(newValue)
+            }
+        }
     }
 }

@@ -21,7 +21,7 @@ fun main() {
         println()
         println()
 
-        cells.step()
+        cells.update()
 
         val newUnknownCount = cells.unknownCount
         if (oldUnknownCount == newUnknownCount) {

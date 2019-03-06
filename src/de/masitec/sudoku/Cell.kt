@@ -15,16 +15,19 @@ class Cell(val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
                 ?.let { setOf(it) }
                 ?: constraints.fold(CellValue.all) { acc, constraint -> acc.intersect(constraint.allowedValues) }
 
-    val requiredValues
+    val requiredValue
         get() =
             value
-                ?.let { setOf<CellValue>() }
-                ?: constraints.map { constraint ->
-                    allowedValues - constraint.cells
-                        .filter { cell -> cell != this }
-                        .fold(CellValue.none) { acc, cell -> acc + cell.allowedValues }
-                }.  fold(CellValue.none) { acc, set -> acc + set }
-
+                ?: constraints
+                    .map { constraint ->
+                        allowedValues.minus(
+                            constraint
+                                .cells
+                                .filter { cell -> cell != this }
+                                .fold(CellValue.none) { acc, cell -> acc + cell.allowedValues })
+                    }
+                    .fold(CellValue.none) { acc, set -> acc + set }
+                    .firstOrNull()
 
     fun out() =
         value
@@ -32,7 +35,14 @@ class Cell(val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
             ?: "   "
 
     override fun toString(): String =
-        "[$x,$y] ${value?.toString() ?: "? $allowedValues $requiredValues"}"
+        "[$x,$y] ${value?.toString() ?: "$allowedValues $requiredValue -> $newValue"}"
+
+    val newValue
+        get() =
+            value
+                ?: allowedValues.singleOrNull()
+                ?: requiredValue
+
 
     fun set(v: CellValue) {
         constraints.forEach { constraint ->
