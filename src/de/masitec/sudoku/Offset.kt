@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019 Marvin H. Sielenkemper
+ */
+
 package de.masitec.sudoku
 
 data class Offset(val i: Int) {

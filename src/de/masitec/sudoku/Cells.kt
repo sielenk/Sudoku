@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019 Marvin H. Sielenkemper
+ */
+
 package de.masitec.sudoku
 
 import java.lang.StringBuilder

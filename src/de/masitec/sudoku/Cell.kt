@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019 Marvin H. Sielenkemper
+ */
+
 package de.masitec.sudoku
 
 class Cell(val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
