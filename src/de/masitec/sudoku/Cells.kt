@@ -100,7 +100,13 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
     }
 
     fun solve(step: (Set<Cell>) -> Unit) {
-        while (constraints.toSet().map { constraint -> constraint.split(step) }.any { it }) {
+        while (true) {
+            val progress1 = constraints.toSet().map { constraint -> constraint.split(step) }.any { it }
+            val progress2 = cells.map { cell -> cell.update(step) }.any { it }
+
+            if (!progress1 && !progress2) {
+                break
+            }
         }
     }
 }
