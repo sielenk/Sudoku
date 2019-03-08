@@ -20,8 +20,9 @@ fun main() {
     }
 
     print(cells)
-    println()
-    println()
-    cells.solve()
-    print(cells)
+    cells.solve {
+        println()
+        println()
+        print(cells.format(it))
+    }
 }

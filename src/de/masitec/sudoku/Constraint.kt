@@ -33,15 +33,16 @@ class Constraint(
         allowedValues -= removeValues
     }
 
-    fun split(): Boolean {
+    fun split(step: (Set<Cell>) -> Unit): Boolean {
         val constraintSplits = mutableSetOf(this)
 
         return cells
             .groupBy { cell -> cell.allowedValues }
             .filter { (allowedValues, newCells) -> allowedValues.size == newCells.size }
-            .map { (allowedValues, newCells) ->
+            .map { (allowedValues, newCells: List<Cell>) ->
                 if (allowedValues.size == 1) {
                     newCells.single().set(allowedValues.single())
+                    step(newCells.toSet())
                     true
                 } else if (newCells.size < cells.size) {
                     constraintSplits.forEach { constraint ->
@@ -49,12 +50,12 @@ class Constraint(
                             constraint.remove(cell, allowedValues)
                         }
                     }
-
                     constraintSplits += Constraint(
                         constraints,
                         newCells.toMutableSet(),
                         allowedValues.toMutableSet()
                     )
+                    step(newCells.toSet())
                     true
                 } else {
                     false

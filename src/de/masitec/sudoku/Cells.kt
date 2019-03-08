@@ -70,11 +70,21 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
 
     operator fun get(x: LargeIndex, y: LargeIndex) = cells[x.i + y.i * 9]
 
-    override fun toString(): String {
+    override fun toString() = format(setOf())
+
+    fun format(highlightCells: Set<Cell>): String {
         val builder = StringBuilder()
 
         cells.forEachIndexed { index, cell ->
-            builder.append(cell.value?.let { " ${it} " } ?: "   ")
+            val cellText = cell.value?.toString() ?: " "
+
+            builder.append(
+                if (highlightCells.contains(cell)) {
+                    "($cellText)"
+                } else {
+                    " $cellText "
+                }
+            )
 
             if (index % 9 == 8) {
                 builder.appendln()
@@ -92,19 +102,8 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         return builder.toString()
     }
 
-    fun solve() {
-        while (constraints.toSet().map(Constraint::split).any { it }) {
-            for (cell in cells) {
-                for (constraint in cell.constraints) {
-                    assert(constraint.cells.contains(cell))
-                }
-            }
-
-            for (constraint in constraints) {
-                for (cell in constraint.cells) {
-                    assert(cell.constraints.contains(constraint))
-                }
-            }
+    fun solve(step: (Set<Cell>) -> Unit) {
+        while (constraints.toSet().map { constraint -> constraint.split(step) }.any { it }) {
         }
     }
 }
