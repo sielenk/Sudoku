@@ -19,19 +19,9 @@ fun main() {
         )
     }
 
-    var oldUnknownCount = cells.unknownCount
-    while (true) {
-        print(cells)
-        println()
-        println()
-
-        cells.update()
-
-        val newUnknownCount = cells.unknownCount
-        if (oldUnknownCount == newUnknownCount) {
-            break
-        }
-
-        oldUnknownCount = newUnknownCount
-    }
+    print(cells)
+    println()
+    println()
+    cells.solve()
+    print(cells)
 }

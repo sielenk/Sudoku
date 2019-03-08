@@ -28,13 +28,18 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
             }
         }.flatten()
 
+    val constraints = mutableSetOf<Constraint>()
+
     init {
         for (f in arrayOf(::row, ::column, ::block)) {
             for (u in LargeIndex.range) {
-                Constraint(LargeIndex.range.map { v ->
-                    val (r, c) = f(u, v)
-                    this[r, c]
-                }.toMutableSet())
+                Constraint(
+                    constraints,
+                    LargeIndex.range.map { v ->
+                        val (r, c) = f(u, v)
+                        this[r, c]
+                    }.toMutableSet()
+                )
             }
         }
 
@@ -69,7 +74,7 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         val builder = StringBuilder()
 
         cells.forEachIndexed { index, cell ->
-            builder.append(cell.out())
+            builder.append(cell.value?.let { " ${it} " } ?: "   ")
 
             if (index % 9 == 8) {
                 builder.appendln()
@@ -87,12 +92,18 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         return builder.toString()
     }
 
-    fun update() {
-        cells.forEach { cell ->
-            val newValue = cell.newValue
+    fun solve() {
+        while (constraints.toSet().map(Constraint::split).any { it }) {
+            for (cell in cells) {
+                for (constraint in cell.constraints) {
+                    assert(constraint.cells.contains(cell))
+                }
+            }
 
-            if (newValue != null) {
-                cell.set(newValue)
+            for (constraint in constraints) {
+                for (cell in constraint.cells) {
+                    assert(cell.constraints.contains(constraint))
+                }
             }
         }
     }
