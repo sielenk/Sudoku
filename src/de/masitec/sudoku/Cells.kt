@@ -65,9 +65,6 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         }
     }
 
-    val unknownCount
-        get() = cells.count { it.value == null }
-
     operator fun get(x: LargeIndex, y: LargeIndex) = cells[x.i + y.i * 9]
 
     override fun toString() = format(setOf())
