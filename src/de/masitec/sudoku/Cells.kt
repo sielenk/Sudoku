@@ -24,7 +24,7 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
     val cells =
         LargeIndex.range.map { y ->
             LargeIndex.range.map { x ->
-                Cell(x, y)
+                Cell(this, x, y)
             }
         }.flatten()
 

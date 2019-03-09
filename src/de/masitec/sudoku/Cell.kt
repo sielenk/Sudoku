@@ -4,8 +4,20 @@
 
 package de.masitec.sudoku
 
-class Cell(val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
-    constructor(x: LargeIndex, y: LargeIndex) : this(x, y, null)
+class Cell(private val cells: Cells, val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
+    private val influencers by lazy {
+        listOf(
+            LargeIndex.range.filter { it != y }.map { cells[x, it] },
+            LargeIndex.range.filter { it != x }.map { cells[it, y] },
+            Position(LargeIndex((x.i / 3) * 3), LargeIndex((y.i / 3 * 3))).let { offset ->
+                LargeIndex.range
+                    .map { offset + Position(LargeIndex(it.i % 3), LargeIndex(it.i / 3)) }
+                    .filterNot { it.x == x && it.y == y }
+                    .map { cells[it] }
+            })
+    }
+
+    constructor(cells: Cells, x: LargeIndex, y: LargeIndex) : this(cells, x, y, null)
 
     val constraints = mutableSetOf<Constraint>()
 
@@ -20,16 +32,14 @@ class Cell(val x: LargeIndex, val y: LargeIndex, var value: CellValue?) {
     val requiredValue
         get() =
             value
-                ?: constraints
-                    .map { constraint ->
-                        allowedValues.minus(
-                            constraint
-                                .cells
-                                .filter { cell -> cell != this }
-                                .fold(CellValue.none) { acc, cell -> acc + cell.allowedValues })
+                ?: influencers
+                    .map {
+                        val requiredSet = allowedValues - it.flatMap { cell -> cell.allowedValues }
+                        requiredSet.singleOrNull()
                     }
-                    .fold(CellValue.none) { acc, set -> acc + set }
-                    .firstOrNull()
+                    .filterNotNull()
+                    .toSet()
+                    .singleOrNull()
 
     fun update(step: (Set<Cell>) -> Unit): Boolean {
         if (value == null) {
