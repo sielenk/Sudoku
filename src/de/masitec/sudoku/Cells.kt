@@ -9,15 +9,15 @@ import java.lang.StringBuilder
 
 class Cells(init: (Int?) -> Array<Array<Int?>>) {
     companion object {
-        private fun row(r: LargeIndex, i: LargeIndex) = Pair(r, i)
-        private fun column(c: LargeIndex, i: LargeIndex) = Pair(i, c)
-        private fun block(b: LargeIndex, i: LargeIndex): Pair<LargeIndex, LargeIndex> {
+        private fun row(r: LargeIndex, i: LargeIndex) = Position(r, i)
+        private fun column(c: LargeIndex, i: LargeIndex) = Position(i, c)
+        private fun block(b: LargeIndex, i: LargeIndex): Position {
             val bx = b.i % 3
             val by = b.i / 3
             val ix = i.i % 3
             val iy = i.i / 3
 
-            return Pair(LargeIndex(ix + bx * 3), LargeIndex(iy + by * 3))
+            return Position(LargeIndex(ix + bx * 3), LargeIndex(iy + by * 3))
         }
     }
 
@@ -36,8 +36,7 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
                 Constraint(
                     constraints,
                     LargeIndex.range.map { v ->
-                        val (r, c) = f(u, v)
-                        this[r, c]
+                        this[f(u, v)]
                     }.toMutableSet()
                 )
             }
@@ -65,6 +64,7 @@ class Cells(init: (Int?) -> Array<Array<Int?>>) {
         }
     }
 
+    operator fun get(p: Position) = this[p.x, p.y]
     operator fun get(x: LargeIndex, y: LargeIndex) = cells[x.i + y.i * 9]
 
     override fun toString() = format(setOf())
